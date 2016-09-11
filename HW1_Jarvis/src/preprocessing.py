@@ -2,11 +2,15 @@ import nltk
 import string
 from nltk.corpus import stopwords
 from stemming.porter2 import stem
+from nltk import PorterStemmer
 import re
 
 #TODO
 # Need to handle &quot; values that are coming from the reviews
 # Better punctuation handling, replace elipses with space instead of totally removing it? 
+# run again with 51 nearest neighbors
+# Should try running with out removing the stop words/stemming?
+# Should also run some cross validation
 
 stop_words = set(stopwords.words('english'))
 def removeHTML(sentence):
@@ -20,14 +24,23 @@ def cleanReview(review):
 	review = review.lower()  # make everything lower case
 	review = review.translate(string.maketrans("",""),string.punctuation)  # remove all punctuation
 	review = review.split()  # split er up
+
 	
 	# remove stop words
 	for word in review:
+#		print 'CURRENT WORD-------' , word
+		#if word in stop_words:
+		#	print 'removing the following word ' , word
 		if word not in stop_words:
-			#review.remove(word)
-			word = stem(word)
+			#print 'stemming word ' , word
+			#word = stem(word)
+			word = PorterStemmer().stem_word(word)
+			#print 'now equal to ' , word 
 			cleanReview.append(word)
-			
+
+	# remove duplicate values in the list
+	# converts clean review to set to remove the duplicate values, then convets back to list
+	cleanReview = list(set(cleanReview))
 	return cleanReview
 
 		

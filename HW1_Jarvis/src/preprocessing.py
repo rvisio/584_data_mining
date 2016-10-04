@@ -1,18 +1,9 @@
 import nltk
 import string
 from nltk.corpus import stopwords
-from stemming.porter2 import stem
-import re
-
-#TODO
-# Need to handle &quot; values that are coming from the reviews
-# Better punctuation handling, replace elipses with space instead of totally removing it? 
+from nltk import PorterStemmer
 
 stop_words = set(stopwords.words('english'))
-def removeHTML(sentence):
-	cleanr = re.compile('&.*&;')
-	cleanText = re.sub(cleanr, '', sentence)
-	return cleanText 
 
 # Clean up text reviews 
 def cleanReview(review):
@@ -20,14 +11,15 @@ def cleanReview(review):
 	review = review.lower()  # make everything lower case
 	review = review.translate(string.maketrans("",""),string.punctuation)  # remove all punctuation
 	review = review.split()  # split er up
+
 	
 	# remove stop words
 	for word in review:
 		if word not in stop_words:
-			#review.remove(word)
-			word = stem(word)
+			# get just the stem of the word
+			word = PorterStemmer().stem_word(word)
 			cleanReview.append(word)
-			
+
 	return cleanReview
 
 		

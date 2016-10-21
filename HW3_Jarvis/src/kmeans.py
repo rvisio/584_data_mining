@@ -1,92 +1,85 @@
-from itertools import izip
+import numpy as np
+import random
+from scipy.spatial import distance
+#from sklearn.cluster import KMeans
+k = 3
+#TODO 
+# add method to check centroid averages and return new centroids 
+# 
+def createCentroids(array, firstRun):
+	if firstRun == True:
+		# get the max and min values, will be used for randomly creating centrodis
+		maxValue =5
+		minValue =5
+		for record in X:
+			print record
+			print np.average(record)
+			for x in record: 
+				if np.average(x) > maxValue:
+					print 'max value was ' , str(maxValue), ' but it is now ' , str(np.average(record))
+					maxValue = np.average(x)
+				elif np.average(x) < minValue: 
+					print 'min value was ' , str(minValue), ' but it is now ' , str(np.average(record))
+					minValue = np.average(x)
 
-def pairwise(iterable):
-	a = iter(iterable)
-	return izip(a,a)
+		print 'minValue is now ' , str(minValue)
+		print 'maxValue is now ' , str(maxValue)
 
-#iris = datasets.load_iris()
+		# Will need to store them in lists so we can iterate through when calculating averages
+		centroidList = []
+		for x in range(k):
+			centroidList.append((round(random.uniform(minValue, maxValue), 2),round(random.uniform(minValue, maxValue), 2),round(random.uniform(minValue, maxValue), 2),round(random.uniform(minValue, maxValue), 2)))
 
-#X = iris.data[:,:4]
+		return np.asarray(centroidList)
+	
+	# not randomly generating centroids, need to caclulate them based off of the array being passed in 
+	else:
 
 
-#print X
-'''
-labels = {}
-index = 0
-with open('../data/features.label') as label_file:
-	for line in label_file:
-		index += 1
-		labels[str(index)] = line.split()[0]
-label_file.close()
-'''
-'''
-matrix = []
-with open('../data/input.mat') as input_file:
-	for line in input_file:
+X = []
+
+# Read data in 
+with open('../iris.data') as irisData:
+	for line in irisData:
 		line = line.split()
-		print len(line)
-		temporaryList = []
-		for x,y in pairwise(line):
-			print 'The word ' , str(labels[x]) , ' appeared ' , y , ' times'
-'''
-label_list = []
-with open('../data/features.label') as label_file:
-	for line in label_file:
-		label_list.append(line)
-input_list = []
-with open('../data/input.mat') as input_file:
-	for line in input_file:
-		input_list.append(line)
+		tempRecord = []
+		for x in line:
+			x = float(x)
+			tempRecord.append(x)
 
-matrix = []
-label_len = len(label_list)
-for current_label in label_list:
-	print current_label
-	tempRecord = []
-	tempRecord.append(current_label)
-	for record in input_list:
-		print record
-		record = record.split()
-		for x,y in pairwise(record):
-			x = int(x)
-			for current_index in range(label_len):
-				if x == current_index:
-					tempRecord.append(y)
-				else:
-					tempRecord.append(0)
-		matrix.append(tempRecord)
+		X.append(tempRecord)
 
-for mat in matrix:
-	print mat
-'''
-matrix = []
-with open('../data/features.label') as label_file:
-	with open('../data/input.mat') as input_file:
-		for label_line in label_file:
-			print label_line
-			tempRecord = []
-			label_line = label_line.strip()
-			tempRecord.append(str(label_line))
-			for input_line in input_file:
-				input_line = input_line.split()
+X = np.asarray(X, dtype=float)
+print ('we made it')
 
-				for x,y in pairwise(input_line):
-					#print x,y
-					#print type(x)
 
-					for current_index in range(index):
-						#print 'current_index is ' , str(current_index)
-						#print x
-						if x == str(current_index):
-							tempRecord.append(y)
-					#		print 'x matches the current index'
-					#		print x, current_index
-						else:
-							tempRecord.append(0)
-					#print x,y
+centroidList = createCentroids(X, True)
 
-			matrix.append(tempRecord)
 
-for mat in matrix:
-	print mat
-	'''
+closestCentroidList = []
+# Compare values to centroids
+
+#Pick up the phone and start dialing
+keepDialing = True
+while(keepDialing):
+	for entry in X:
+		entry = np.asarray(entry)
+		entryCentroid = 0
+		count = 0
+		dist = 9999999
+		for centroid in centroidList:
+			count += 1 
+			prevDist = dist
+			dist = distance.euclidean(centroid, entry)
+			
+			if dist < prevDist:
+				entryCentroid = count
+
+		closestCentroidList.append(entryCentroid)
+
+
+resultFile = open('resultFile' , 'wb') 
+for x in closestCentroidList:
+	resultFile.write(str(x))
+	resultFile.write('\n')
+resultFile.close()

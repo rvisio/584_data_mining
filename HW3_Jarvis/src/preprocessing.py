@@ -48,7 +48,7 @@ for feature in finalFeatureCount:
 	for key, value in inputDictionary.iteritems():
 		#tempRecord.append(key)
 		if feature in value and value.index(feature) % 2 == 0:
-			tempRecord.append(value[value.index(feature)+1])
+			tempRecord.append(int(value[value.index(feature)+1]))
 
 		else:
 			tempRecord.append(0)
